@@ -1,0 +1,93 @@
+Metadata
+All the data is from Danmarks Statistik. In order to get as much data from Danmarks Statistik as possible, you should make an account on the website, as that allows you to select data above 1000 numbers. 
+
+
+Danmarks Statistiks license is Creative Commons, CC 4.0 BY. The description of Creative Commons, CC 4.0 BY can be found on the following link: https://creativecommons.org/licenses/by/4.0/
+
+
+NABP10_bruttoværditilvækst_flere_brancher_clean
+Unit: million danish kroner 
+Non-seasonally adjusted 
+
+Da der for årene 2021 og 2022 vurderes at være større usikkerhed, særligt i beregningerne af det branchefordelte forbrug i produktion, offentliggøres der kun branchefordelte tal på 10a3 grupperingen. Læs mere i Nytartiklen: www.dst.dk/nyt/45343 Kædede værdier er ikke direkte additive. Ved kædede værdier kan man ikke danne totaler ved simpel sammenlægning af delkomponenter. Det er nødvendigt at bruge en særlig formel, som beskrevet på https://www.dst.dk/ext/national/NR-DOK. 
+
+Link to the raw data: www.statistikbanken.dk/NABP10
+To access the dataset that we are going to be analyzing, you have to go through the following process:
+Firstly under “Transaktion” you must choose “B. 1g Bruttoværditilvækst, BVT”
+Afterwards under “branche” you choose everything apart from “i alt”
+Under “prisenhed” you choose “løbende priser”
+Lastly under “år” you choose all of the years possible.
+
+LICENSE: Creative Commons, CC 4.0 BY.
+
+NABB10_Beskæftigelse_brancher 1966-2022_clean
+Original title: “Beskæftigelse og timer (10a3-gruppering) efter socioøkonomisk status, branche og tid”
+
+Unit - total number of employees 
+
+Link to the raw data: www.statistikbanken.dk/NABB10
+To access the specific dataset that we have looked at, you have to do the following: 
+Under “socioøkonomisk status” you choose “Samlet antal beskæftigede (antal)”
+Under “branche” you choose everything apart from “I alt”.
+Under “år” you choose all of the years.
+
+
+
+LICENSE: Creative Commons, CC 4.0 BY.
+
+NABP10_bruttoværditilvækst_flere_brancher_clean
+Original Title: Produktion, BVT og indkomstdannelse (10a3-gruppering) efter transaktion, branche og prisenhed
+Unit: Million Danish kroner
+
+Link to raw data: https://statistikbanken.dk/NABP10
+
+LICENSE: Creative Commons, CC 4.0 BY. 
+
+
+landbrug_udledning_drivhusgasser_clean
+Original title: “Udledning fra landbrug, skovbrug og fiskeri efter emissionstype og tid”
+Unit: Million ton Carbon dioxide equivalent
+
+Fluorinated gasses (SF6, PFC, HFC) are below 0,008 ton Carbon dioxide equivalents yearly and are therefore not included
+
+Link to the raw data: www.statistikbanken.dk/TEMA9010
+
+LICENSE: Creative Commons, CC 4.0 BY.
+
+landbrug_regnskab_100_clean 
+Unit: per. hectar (Danish Kroner)
+Number of agricultural holdings (1916- )
+
+Data er samlet fra tilgængelige tidsserier og publikationer for perioden 1916/17 og frem. Det har ikke været muligt at korrigere for ændret afgrænsning i statistikken. Data er vist pr. hektar for alle landbrug for hele perioden. Fra 1973 er det tillige muligt at se data pr. bedrift for alle landbrug og forskellige inddellinger heraf, fx. driftsformer. Fra 2020 er bundgrænsen for medtagne bedrifter øget fra 15.000 til 25.000 Euro. 
+
+Link to the raw data: https://www.statistikbanken.dk/JORD100
+To get the same dataset that we are using you must do the following:
+Mark all of the options possible and download it as an excel-file. 
+
+LICENSE: Creative Commons, CC 4.0 BY.
+
+drivhusgas_udledning_branche_tid_clean
+Original title: “TEMA9005: Udledning af drivhusgas efter branche”
+Udledningen er opgjort ekskl. CO2 fra afbrænding af biomasse og LULUCF. 
+Unit: 1000 tonnes 
+
+Link to the raw data: www.statistikbanken.dk/TEMA9005
+To access the same dataset as us, you must choose all of the “brancher” and “år” as possible 
+
+LICENSE: Creative Commons, CC 4.0 BY.
+
+landbrugbedrifter_dyrket_areal _1984-2022_clean
+Original title: “BDF52: Bedrifter efter enhed, areal og landmandens alder - 1984-2022”
+Unit: Agricultural holdings and cultivated area in hectares 
+Denmark’s land area from 2023: 4295200 is used for comparison
+
+Link to the raw data: www.statistikbanken.dk/BDF52
+To access the data set that we will be analyzing, you must do the following:
+Under “enhed” you select all the options 
+Under “areal” you must choose “i alt” 
+Under “landmandens alder” you must choose “i alt” 
+Under “år” you must select all options
+
+LICENSE: Creative Commons, CC 4.0 BY.
+
+In the cleaning proces of our data we have transposed the columns and rows in order to get years as a column instead of a row. An example of this can be seen in the landbrugbedrifter_dyrket_areal _1984-2022 dataset, where we have transposed the columns and rows. When years are in one column it makes it easier to use in R, when using different column functions. 
