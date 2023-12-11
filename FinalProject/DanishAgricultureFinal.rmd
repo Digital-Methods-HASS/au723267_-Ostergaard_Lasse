@@ -1,0 +1,240 @@
+---
+title: "DanishAgriculture"
+author: "Lasse Horsøe Østergaard & Gustav Lynggaard Vinther"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+# Final Project: The Development of Danish Agriculture seen through data
+This RMarkdown displays our work with data and visualizing, the analysis of these can be found in our word-document
+The Data, metadata and visualizations and can be found in our GitHub-repository: [indsæt link]
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Library & loading packages
+First we load the packages needed for our work
+
+```{r library}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+library(tidyr)
+library(gganimate)
+
+```
+
+# Loading Data
+Afterwards we load the data from the data-folder, using read_csv() and assigning it as objects
+```{r loading data into R}
+DrivhusgasBrancher <- read_csv("data/CleanCsv/drivhusgas_udledning_branche_tid_clean.csv")
+LandbrugRegnskab100 <- read_csv("data/CleanCsv/landbrug_regnskab_100_clean.csv")
+LandbrugDrivhusgasser <- read_csv("data/CleanCsv/landbrug_udledning_drivhusgasser_clean.csv")
+LandbrugbedrifterAreal <- read_csv("data/CleanCsv/landbrugbedrifter_dyrket_areal _1984-2022_clean.csv")
+BruttoværditilvækstBrancher <- read_csv("data/CleanCsv/NABP10_bruttoværditilvækst_flere_brancher_clean.csv")
+BeskæftigelseBrancher <- read_csv("data/CleanCsv/NKBB10_Beskæftigelse_brancher_1966-2022_clean.csv")
+```
+
+# Visualisation and analysis 
+Now we move on to making the visualization with our data
+
+## Danish Agriculture: areal and number of agricultural holdings: transforming the data
+Firstly, we will look at the data and see if it needs som data-wrangling
+
+```{r checking data LandbrugbedrifterAreal}
+head(LandbrugbedrifterAreal)
+```
+It appears we have to make some changes.
+
+In order to make a visualization of this data, we create a coloumn to show the agricultures part of the danish land areal. To do this, we use the "dansk_landareal_2023_ha", which is the total Danish land area in 2023 in hectares. We do this to get a visualization of the percentage of the agriculture's part of Denmark. We use mutate() to create a new column called "landbrug_andel_af_DKAreal"
+```{r}
+LandbrugArealAndelPct <- LandbrugbedrifterAreal %>% 
+  mutate(landbrug_andel_af_DKAreal=(samlet_dyrket_areal_ha/dansk_landareal_2023_ha)*100)
+```
+
+Let us take a look at the data
+```{r}
+head(LandbrugArealAndelPct)
+```
+
+This will allow us to make a visualization of the percentage of cultivated land areal in Denmark
+
+
+## Danish Agriculture: areal and number of agricultural holdings: visualization
+
+Now the data is ready for making a visualization
+
+```{r}
+LandbrugArealAndelPct %>% 
+  ggplot(aes(x=år, y=landbrug_andel_af_DKAreal))+
+  geom_area(fill="darkgoldenrod2")+
+  scale_y_continuous(limits=c(0, 100), breaks = scales::pretty_breaks(n = 10))+
+  scale_x_continuous(limits=c(1984, 2022), breaks = scales::pretty_breaks(n = 10))+
+  labs(title = "Cultivated area of the total area of Denmark 1984-2022", x="Year", y= "Cultivated part of Danish land area, pct.")+
+  theme_minimal()
+  
+
+```
+
+### Agricultural holdings in Denmark
+
+In the same period there is a big decrease in the number of agricultural holdings
+
+```{r}
+LandbrugArealAndelPct %>% 
+  ggplot(aes(x=år, y=bedrifter_antal))+
+  geom_area(fill="springgreen3")+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10))+
+  labs(title = "Agricultural holdings in Denmark,1984-2022", x="Year", y= "Total ammount of agricultural holdings")+
+  theme_minimal()
+
+```
+
+## Emission of greenhouse gases in Denmark divided by line of industry
+The data for emission of greenhouse gasses in different lines of industries is ready to visualize. 
+"Color = branche" is used to give every industry a different color
+
+[indsæt forklaring]
+
+```{r Plotting emission of greenhouse gases in Denmark divided by industry}
+DrivhusgasBrancher %>%
+  ggplot(aes(x = år, y = Co2_1000ton, color = branche)) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_color_viridis_d(name = "Line of industry", labels = c("Energy, water, sewage supply companies", "Industry", "Agriculture, forestry and fishing industry", "Other companies"))+
+  labs(title = "Emission of greenhouse gases in Denmark divided by industry 1990-2022", x = "Year", y = "Co2 1000 ton") +
+  theme_minimal()
+
+
+```
+
+## Danish agriculture emission of different greenhouse gasses
+
+The data of the development of Danish agriculture's emission of different greenhouse gasses is visualization-ready as well. For this data we use geom_area() to showcase the different greenhouse gasses in comparison to each other. 
+
+```{r Plotting Danish agriculture emission of different greenhouse gasses }
+LandbrugDrivhusgasser %>% 
+  ggplot(aes(fill=drivhusgas, x = år, y = `millioner_ton_Co2-ækvivalenter`))+
+  geom_area(alpha=0.8,size=0.5, color= "black")+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10))+
+  labs(title = "Danish agriculture's emission of different greenhouse gasses, 1990-2022", x="Year",y="Million tonnes Co2 equivalents")+
+  scale_fill_discrete(name = "Greenhouse gasses", labels=c("Carbon dioxide (excluding burning of biomass)","Nitrous oxide","Methane"))+
+  theme_minimal()
+
+```
+
+## Danish agriculture's economical significance
+Now we are going to make some animations to visualize some data, showing Danish agriculture's economical impact on Danish economy.
+
+### Gross value added and number of employees in different lines of industries: transforming the data
+
+Firstly, we have to some data-wrangling to use it properly
+
+```{r reviewing the data}
+head(BruttoværditilvækstBrancher)
+```
+As seen above, the data is in a wide-data format. In order to make meaningful visualisations with the data "Bruttoværditilvækst" it has to be transformed into a tall data-format.
+
+Therefore we use pivot_longer() to make a table with the different lines of industry under the column, "brancher" and their values under the column, "million_dkk". 
+
+```{r}
+BruttoværditilvækstBrancherTall <- BruttoværditilvækstBrancher %>% 
+  pivot_longer(cols= c("offentlig_forvaltning_og_service", "landbrug_skovbrug_fiskeri", "råstofindvinding", "industri", "forsyningsvirksomhed","bygge_og_anlæg","handel_og_transport_mv","information_og_kommunikation","finansiering_og_forsikring","ejendomshandel_og_udlejning_af_erhvervsejendomme", "boliger", "erhvervsservice","offentlig administration_undervisning_sundhed", "kultur_fritid_anden_service"), names_to = "brancher", values_to = "million_dkk")
+
+
+```
+
+
+Now, let's check if the data has been transformed the way we wanted it to
+```{r Checking data BruttoværditilvækstBrancherTall}
+head(BruttoværditilvækstBrancherTall)
+```
+It looks right.
+
+Now we want to add employment rates in different lines of industry to the dataframe aswell, because the data contains the same industries in the same time period. 
+
+The process is the same as before, using pivot_longer() to put the different lines of industries under the column "brancher" and their values under the column "antal_beskæftigede
+```{r}
+BeskæftigelseBrancherTall <- BeskæftigelseBrancher %>% 
+  pivot_longer(cols= c("offentlig_forvaltning_og_service", "landbrug_skovbrug_fiskeri", "råstofindvinding", "industri", "forsyningsvirksomhed","bygge_og_anlæg","handel_og_transport_mv","information_og_kommunikation","finansiering_og_forsikring","ejendomshandel_og_udlejning_af_erhvervsejendomme", "boliger", "erhvervsservice","offentlig administration_undervisning_sundhed", "kultur_fritid_anden_service"), names_to = "brancher", values_to = "antal_beskæftigede")
+```
+
+
+Now we mutate() a new column in BeskæftigelseBrancherTall, using the column "million_dkk" in BruttoværditilvækstBrancherTall and assign it as a new dataframe, "BeskæftigelseBVT"
+```{r mutating}
+BeskæftigelseBVT <- BeskæftigelseBrancherTall %>% 
+  mutate(Bruttotilvækst_MilDKK = BruttoværditilvækstBrancherTall$million_dkk)
+
+```
+
+Let us see if we have succeded in combining the two
+```{r}
+head(BeskæftigelseBVT)
+```
+
+Now we have combined the two dataframes into one and should be able to move on with the animating
+
+### Gross value added and number of employees in different lines of industries: animating
+
+
+The function: transition_time(as.integer(år)), animates the geom_point() to change for every year
+Different scaling is done for aesthetic reasons
+The legend and the labels under are edited using: scale_color_viridis_d(). shadow_wake() is used to make small "tails" on each point to accentuate the movement of the different points.
+```{r Animation}
+options(scipen = 999)
+
+BBVT_Animation <- BeskæftigelseBVT %>% 
+  ggplot(aes(x=antal_beskæftigede, y=Bruttotilvækst_MilDKK, color = brancher)) + 
+  geom_point(show.legend = TRUE, alpha = 0.7, size=8, )+
+  scale_color_viridis_d(name = "Line of industry", labels = c("Housing","Construction","Property trading and lending of commercial properties","Business service","Financing and insurance","Supply business","Trade and transport etc.","Industry","Information and communication","Culture, leisure and other services","Agriculture, forestry and fishing","Public administration, education and health","Public government and services","Raw material extraction"))+
+  scale_y_continuous(limits=c(240, 700000))+
+  scale_x_continuous(limits=c(3231, 1000000))+
+  scale_size(range=c(2,12))+
+  transition_time(as.integer(år))+
+  labs(title = "Employment rates and gross value added", subtitle = "In different lines of industries in Denmark, year: {frame_time}", x="Total number of employees", y="Gross Value added, mil. dkk")+
+  shadow_wake(wake_length = 0.1, alpha = FALSE)+
+  theme_minimal()
+  
+BBVT_Animation
+
+```
+
+### Focus on employment in Danish agriculture
+
+In order to make an animation of the total number of employees in Danish agriculture in the period 1966 to 2022, we will have to use "BeskæftigelseBrancher" in the wide format and choose the x= We assign this to a new plot, "LandbrugBeskæftigelsePlot" in order to animate. Furthermore we changed some aesthetics, using labs(), scale_y_continuous() and scale_x_continuous()
+
+```{r}
+LandbrugBeskæftigelsePlot<- BeskæftigelseBrancher %>% 
+  ggplot(aes(x=år, y=landbrug_skovbrug_fiskeri))+
+  geom_line(color="darkslateblue", linewidth= 2)+
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  labs(title = "Danish agriculture employment", subtitle = "Total number of people employed, 1966-2022", x = "Year", y = "Total number of employees") +
+  theme_minimal()
+```
+
+
+And now we animate:
+```{r}
+ LandbrugBeskæftigelsePlot + transition_reveal(år)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
